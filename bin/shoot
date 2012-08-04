@@ -2,8 +2,10 @@
 
 set -e
 
+USER=$(whoami)
+
 # make sure X is running for the current user.
-pgrep -u $(whoami) xinit &> /dev/null || exit $?
+pgrep -u $USER xinit &> /dev/null || exit $?
 
 # make sure user is not idle for at least 1 minute (60 * 1000).
 which idletime &> /dev/null || exit $?
@@ -11,17 +13,22 @@ which idletime &> /dev/null || exit $?
 # used by idletime and import.
 export DISPLAY=:0
 
-[ $(idletime) -lt 60000 ]
+[ $(idletime) -lt 60000 ] || exit 0
 
 DATE=$(date +"%F")
 TIME=$(date +"%T")
 
-SSS_DIR=$HOME/screenshots/$DATE
+SSS_DIR=$HOME/screenshots
 
-mkdir -p $SSS_DIR
+mkdir -p $SSS_DIR/$DATE
 
-# take screenshot.
-xdpyinfo -ext XINERAMA | sed '/^  head #/!d;s///' |
-while IFS=' :x@,' read i w h x y; do
-    import -window root -crop ${w}x$h+$x+$y $SSS_DIR/head_${i}_$TIME.png
-done
+# take the screenshot.
+if [ -z "${SHOOT_SPLITHEADS}" ]; then
+    # import blocks X events for 1-2 seconds on my machine; it's slow.
+    xdpyinfo -ext XINERAMA | sed '/^  head #/!d;s///' |
+    while IFS=' :x@,' read i w h x y; do
+	import -window root -crop ${w}x$h+$x+$y $SSS_DIR/$DATE/head_${i}_$TIME.png
+    done
+else
+    xwd -root|xwdtopnm|pnmtopng > $SSS_DIR/$DATE/$TIME.png
+fi
