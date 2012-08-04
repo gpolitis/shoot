@@ -3,20 +3,24 @@
 set -e
 
 # make sure X is running for the current user.
-pgrep -u "$USER" xinit &> /dev/null || exit 1
+pgrep -u $(whoami) xinit &> /dev/null || exit $?
 
 # make sure user is not idle for at least 1 minute (60 * 1000).
-[ $(idletime) -lt 60000 ] || exit 1
+which idletime &> /dev/null || exit $?
 
+# used by idletime and import.
 export DISPLAY=:0
+
+[ $(idletime) -lt 60000 ]
+
 DATE=$(date +"%F")
 TIME=$(date +"%T")
 
-SSS_DIR=~/screenshots/$DATE
+SSS_DIR=$HOME/screenshots/$DATE
 
 mkdir -p $SSS_DIR
 
-# https://wiki.archlinux.org/index.php/Taking_a_Screenshot
+# take screenshot.
 xdpyinfo -ext XINERAMA | sed '/^  head #/!d;s///' |
 while IFS=' :x@,' read i w h x y; do
     import -window root -crop ${w}x$h+$x+$y $SSS_DIR/head_${i}_$TIME.png
