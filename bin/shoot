@@ -23,12 +23,12 @@ SSS_DIR=$HOME/screenshots
 mkdir -p $SSS_DIR/$DATE
 
 # take the screenshot.
-if [ -z "${SHOOT_SPLITHEADS}" ]; then
+if [ ! -z "${SHOOT_SPLITHEADS}" ]; then
     # import blocks X events for 1-2 seconds on my machine; it's slow.
     xdpyinfo -ext XINERAMA | sed '/^  head #/!d;s///' |
     while IFS=' :x@,' read i w h x y; do
 	import -window root -crop ${w}x$h+$x+$y $SSS_DIR/$DATE/head_${i}_$TIME.png
     done
 else
-    xwd -root|xwdtopnm|pnmtopng > $SSS_DIR/$DATE/$TIME.png
+    xwd -root|xwdtopnm 2>/dev/null|pnmtopng > $SSS_DIR/$DATE/$TIME.png
 fi
