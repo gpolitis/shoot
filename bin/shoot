@@ -8,12 +8,12 @@ USER=$(whoami)
 pgrep -u $USER xinit &> /dev/null || exit $?
 
 # make sure user is not idle for at least 1 minute (60 * 1000).
-which idletime &> /dev/null || exit $?
+which xidle &> /dev/null || exit $?
 
-# used by idletime and import.
+# used by xidle and import.
 export DISPLAY=:0
 
-[ $(idletime) -lt 60000 ] || exit 0
+[ $(xidle | awk '{print $1}') -lt 60000 ] || exit 0
 
 DATE=$(date +"%F")
 TIME=$(date +"%T")
