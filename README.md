@@ -7,7 +7,7 @@ Install with:
 
 Then you can use it like this in your crontab:
 
-*/1 * * * * . $HOME/.profile; screenshot
+*/1 * * * * . $HOME/.profile; shoot
 
 [1]: https://wiki.archlinux.org/index.php/Taking_a_Screenshot
 [2]: http://github.com/gpolitis/idletime
